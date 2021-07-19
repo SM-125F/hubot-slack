@@ -103,7 +103,7 @@ class SlackTextMessage extends TextMessage
     # base text
     text = if @rawMessage.text? then @rawMessage.text else ""
 
-    # Catch and consume thread arguments; TODO: handle if someone puts this within quotes
+    # Catch and consume thread arguments
     pos = text.indexOf(" --thread_broadcast")
     if pos > -1
       text = text.substring(0, pos) + text.substring(pos + 19)
