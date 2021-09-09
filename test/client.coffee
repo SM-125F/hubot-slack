@@ -1,4 +1,5 @@
-{RtmClient, WebClient, MemoryDataStore} = require '@slack/client'
+{RTMClient} = require "@slack/rtm-api"
+{WebClient} = require "@slack/web-api"
 SlackFormatter = require '../src/formatter'
 SlackClient = require '../src/client'
 should = require 'should'
@@ -6,12 +7,12 @@ _ = require 'lodash'
 
 describe 'Init', ->
   it 'Should initialize with an RTM client', ->
-    (@client.rtm instanceof RtmClient).should.equal true
-    @client.rtm._token.should.equal 'xoxb-faketoken'
+    (@client.rtm instanceof RTMClient).should.equal true
+    @client.rtm.webClient.token.should.equal 'xoxb-faketoken'
 
   it 'Should initialize with a Web client', ->
     (@client.web instanceof WebClient).should.equal true
-    @client.web._token.should.equal 'xoxb-faketoken'
+    @client.web.token.should.equal 'xoxb-faketoken'
 
   it 'Should initialize with a SlackFormatter - DEPRECATED', ->
     (@client.format instanceof SlackFormatter).should.equal true

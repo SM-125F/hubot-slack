@@ -117,14 +117,14 @@ You can access the [Slack Web API](https://api.slack.com/web_api) from your Hubo
 [Slack Developer Kit for Node.js](https://slackapi.github.io/node-slack-sdk/) package into your Hubot project:
 
 ```
-npm install --save @slack/client
+npm install --save @slack/web-api
 ```
 
 Next, modify your script to instatiate a `WebClient` object using the same token your Hubot used to connect.
 
 ```coffeescript
 # Import the Slack Developer Kit
-{WebClient} = require "@slack/client"
+{WebClient} = require "@slack/web-api"
 
 module.exports = (robot) ->
   web = new WebClient robot.adapter.options.token
@@ -136,7 +136,7 @@ Finally, anytime you'd like to call a Web API method, call it like a method on `
 
 ```coffeescript
 # Import the Slack Developer Kit
-{WebClient} = require "@slack/client"
+{WebClient} = require "@slack/web-api"
 
 module.exports = (robot) ->
   web = new WebClient robot.adapter.options.token
@@ -190,7 +190,7 @@ can both listen for these from other users, and send reactions of its own. Here 
 emoji reactions and add the same reaction back to the same message.
 
 ```coffeescript
-{WebClient} = require "@slack/client"
+{WebClient} = require "@slack/web-api"
 
 module.exports = (robot) ->
   web = new WebClient robot.adapter.options.token
@@ -250,7 +250,7 @@ set up that can update that variable based on an incoming message. Then a new li
 the current channel in the variable, no matter where the incoming message is received.
 
 ```coffeescript
-{WebClient} = require "@slack/client"
+{WebClient} = require "@slack/web-api"
 
 module.exports = (robot) ->
   web = new WebClient robot.adapter.options.token

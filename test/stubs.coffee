@@ -18,13 +18,13 @@ beforeEach ->
   @stubs = {}
 
   @stubs._sendCount = 0
-  @stubs.send = (conversationId, text, opts) =>
-    @stubs._room = conversationId
+  @stubs.send = (opts) =>
+    @stubs._room = opts.channel
     @stubs._opts = opts
-    if (/^[UD@][\d\w]+/.test(conversationId)) or (conversationId is @stubs.DM.id)
-      @stubs._dmmsg = text
+    if (/^[UD@][\d\w]+/.test(opts.channel)) or (opts.channel is @stubs.DM.id)
+      @stubs._dmmsg = opts.text
     else
-      @stubs._msg = text
+      @stubs._msg = opts.text
     @stubs._sendCount = @stubs._sendCount + 1
 
   # These objects are of conversation shape: https://api.slack.com/types/conversation
@@ -159,9 +159,9 @@ beforeEach ->
           when @stubs.channel.id then @stubs.channel
           when @stubs.DM.id then @stubs.DM
   @stubs.chatMock =
-    postMessage: (conversationId, text, opts) =>
-      return Promise.reject(new Error("stub error")) if conversationId is @stubs.channelWillFailChatPost
-      @stubs.send(conversationId, text, opts)
+    postMessage: (opts) =>
+      return Promise.reject(new Error("stub error")) if opts.channel is @stubs.channelWillFailChatPost
+      @stubs.send(opts)
       Promise.resolve()
   @stubs.conversationsMock =
     setTopic: (id, topic) =>

@@ -1,6 +1,7 @@
 _                      = require "lodash"
 Promise                = require "bluebird"
-{RtmClient, WebClient} = require "@slack/client"
+{ RTMClient }          = require "@slack/rtm-api"
+{ WebClient }          = require "@slack/web-api"
 SlackFormatter         = require "./formatter"
 
 class SlackClient
@@ -30,8 +31,8 @@ class SlackClient
   # @constructor
   # @param {Object} options - Configuration options for this SlackClient instance
   # @param {string} options.token - Slack API token for authentication
-  # @param {Object} [options.rtm={}] - Configuration options for owned RtmClient instance
-  # @param {Object} [options.rtmStart={}] - Configuration options for RtmClient#start() method
+  # @param {Object} [options.rtm={}] - Configuration options for owned RTMClient instance
+  # @param {Object} [options.rtmStart={}] - Configuration options for RTMClient#start() method
   # @param {boolean} [options.noRawText=false] - Deprecated: All SlackTextMessages (subtype of TextMessage) will contain
   # both the formatted text property and the rawText property
   # @param {Robot} robot - Hubot robot instance
@@ -42,7 +43,12 @@ class SlackClient
     # NOTE: the recommended initialization options are `{ dataStore: false, useRtmConnect: true }`. However the
     # @rtm.dataStore property is publically accessible, so the recommended settings cannot be used without breaking
     # this object's API. The property is no longer used internally.
-    @rtm = new RtmClient options.token, options.rtm
+    if !options.rtm
+      options.rtm = { "dataStore": true }
+    else
+      options.rtm.dataStore = true
+
+    @rtm = new RTMClient options.token, options.rtm
     @web = new WebClient options.token, { maxRequestConcurrency: 1 }
 
     @robot.logger.debug "RtmClient initialized with options: #{JSON.stringify(options.rtm)}"
@@ -199,6 +205,7 @@ class SlackClient
       {text: text, mrkdwn_in: ['text'], fallback: text}
 
     options =
+      channel: room
       as_user: true,
       link_names: 1,
       # when the incoming message was inside a thread, send responses as replies to the thread
@@ -206,14 +213,15 @@ class SlackClient
       # e.g. "#{conversationId} #{thread_ts}" - this would allow a portable way to say the message is in a thread
       thread_ts: envelope.message?.thread_ts,
       reply_broadcast: envelope.message?.reply_broadcast,
+      text: text,
       attachments: [attachment]
 
     if typeof message isnt "string"
-      @web.chat.postMessage(room, "", _.defaults(message, options))
+      @web.chat.postMessage(_.defaults(message, options))
         .catch (error) =>
           @robot.logger.error "SlackClient#send() error: #{error.message}"
     else
-      @web.chat.postMessage(room, "", options)
+      @web.chat.postMessage(options)
         .catch (error) =>
           @robot.logger.error "SlackClient#send() error: #{error.message}"
 
